@@ -2,7 +2,8 @@ import os
 import math
 from typing import List, Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
+from app.core.rate_limiter import limiter
 from bson import ObjectId
 from pydantic import BaseModel, Field
 
@@ -49,7 +50,9 @@ class TutorChatRequest(BaseModel):
 
 
 @router.post("/documents/{doc_id}/simulate", response_model=dict)
+@limiter.limit("5/minute")
 async def run_simulation(
+    request: Request,
     doc_id: str,
     payload: SimulationRequest,
     current_user: User = Depends(get_current_user)
@@ -156,7 +159,9 @@ async def list_simulations(
 
 
 @router.post("/cross-reasoning", response_model=dict)
+@limiter.limit("5/minute")
 async def cross_document_reasoning(
+    request: Request,
     payload: CrossReasoningRequest,
     current_user: User = Depends(get_current_user)
 ):
@@ -264,7 +269,9 @@ async def cross_document_reasoning(
 
 
 @router.post("/tutor/chat", response_model=dict)
+@limiter.limit("5/minute")
 async def tutor_chat(
+    request: Request,
     payload: TutorChatRequest,
     current_user: User = Depends(get_current_user)
 ):

@@ -719,3 +719,26 @@ async def generate_cross_document_synthesis(context_chunks: List[dict], query: s
             if attempt == 2:
                 raise e
             await asyncio.sleep(2 * (attempt + 1))
+
+
+async def recover_interrupted_ingestions():
+    """
+    Finds all documents stuck in 'processing' or 'pending' state
+    and re-runs the ingestion process in the background.
+    """
+    from beanie.operators import In
+    try:
+        stuck_docs = await DocumentItem.find(
+            In(DocumentItem.status, ["processing", "pending"])
+        ).to_list()
+        
+        if not stuck_docs:
+            return
+
+        logger.info(f"Found {len(stuck_docs)} interrupted document ingestions to recover.")
+        for doc in stuck_docs:
+            logger.info(f"Recovering document: {doc.title} (ID: {doc.id})")
+            asyncio.create_task(start_document_ingestion(str(doc.id)))
+            
+    except Exception as e:
+        logger.error(f"Error during ingestion recovery check: {e}")
