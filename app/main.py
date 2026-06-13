@@ -35,7 +35,7 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 # Configure CORS for Next.js frontend development and production
-origins = [o.strip() for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
+origins = [o.strip().rstrip("/") for o in settings.ALLOWED_ORIGINS.split(",") if o.strip()]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
