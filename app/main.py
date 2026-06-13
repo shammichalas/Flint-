@@ -36,6 +36,13 @@ app.include_router(documents.router, prefix="/api")
 app.include_router(concepts.router, prefix="/api")
 app.include_router(intelligence.router, prefix="/api")
 
+@app.get("/")
+def root():
+    return {
+        "message": "Flint API is running",
+        "status": "online"
+    }
+
 @app.get("/health")
 def health_check():
     return {
