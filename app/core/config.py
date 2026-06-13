@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     # App Settings
     PROJECT_NAME: str = "Thought Compression Engine API"
     VERSION: str = "0.1.0"
+    ALLOWED_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
 
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
